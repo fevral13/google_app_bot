@@ -5,7 +5,9 @@ from urllib import quote
 import urllib
 import random
 import hashlib
-from multiprocessing import Process, Queue, Lock
+# from multiprocessing import Process, Queue, Lock
+from threading import Thread, Lock
+from Queue import Queue
 
 from django.conf import settings
 import os
@@ -24,7 +26,7 @@ image_queue = Queue()
 db_lock = Lock()
 
 
-class ImageWorker(Process):
+class ImageWorker(Thread):
     def __init__(self, *args, **kwargs):
         super(ImageWorker, self).__init__(*args, **kwargs)
         self.running = True
@@ -53,7 +55,7 @@ class ImageWorker(Process):
                     image.save()
 
 
-class AppWorker(Process):
+class AppWorker(Thread):
     def __init__(self, *args, **kwargs):
         super(AppWorker, self).__init__(*args, **kwargs)
         self.wd = webdriver.Firefox()
